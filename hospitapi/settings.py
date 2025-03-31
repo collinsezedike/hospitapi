@@ -15,6 +15,8 @@ import dj_database_url
 from dotenv import load_dotenv
 from pathlib import Path
 
+load_dotenv()
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -23,16 +25,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get(
-    "SECRET_KEY", "django-insecure-hn2_t6^6(l9@2u09hpmi@k8lx7gf!(dll@8pw07k&=)t%$adkk"
-)
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get("DEBUG", "True") == "True"
+DEBUG = os.getenv("DEBUG") == "True"
 
-DB_PREFIX = "hospitapi_"
-
-ALLOWED_HOSTS = [os.environ.get("HOSTNAME", "")]
+ALLOWED_HOSTS = []
+if not DEBUG:
+    ALLOWED_HOSTS.append(os.getenv("ALLOWED_HOSTS"))
 
 
 # Application definition
@@ -41,14 +41,17 @@ INSTALLED_APPS = [
     "django_db_prefix",
     "rest_framework",
     "rest_framework.authtoken",
-    "api.apps.ApiConfig",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "api.apps.ApiConfig",
 ]
+
+# table prefix name
+DB_PREFIX = "hospitapi_"
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -100,9 +103,8 @@ DATABASES = {
 }
 
 if "DATABASE_URL" in os.environ:
-    DATABASES["default"] = dj_database_url.config(
-        conn_max_age=500,
-        conn_health_checks=True,
+    DATABASES["default"] = dj_database_url.parse(
+        os.getenv("DATABASE_URL"), conn_max_age=500, conn_health_checks=True
     )
 
 
