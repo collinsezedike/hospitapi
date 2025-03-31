@@ -32,7 +32,7 @@ DEBUG = os.environ.get("DEBUG", "True") == "True"
 
 DB_PREFIX = "hospitapi_"
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [os.environ.get("HOSTNAME", "")]
 
 
 # Application definition
